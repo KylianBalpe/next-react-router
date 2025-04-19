@@ -1,20 +1,24 @@
-import { Route, Routes, BrowserRouter } from "react-router";
-import { ErrorBoundary } from "react-error-boundary";
-
-import HomePage from "@/pages/HomePage";
-import LoginPage from "@/pages/LoginPage";
-import NotFound from "@/pages/NotFound";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Router from "./router";
+import { useState } from "react";
 
 export default function App() {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: Infinity,
+          },
+        },
+      }),
+  );
+
   return (
-    <ErrorBoundary fallback={<div>Error</div>}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <Router />
+      <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
